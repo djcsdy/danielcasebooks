@@ -54,7 +54,7 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
   model = nil
 
   bot.on_startup do
-    model = Model.load("model/danielcassidy.model")
+    model = Ebooks::Model.load("model/danielcassidy.model")
   end
 
   bot.on_follow do |user|
