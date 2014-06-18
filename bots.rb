@@ -50,6 +50,12 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
   raise "Invalid consumer_secret" unless bot.consumer_secret
   raise "Invalid oauth_token" unless bot.oauth_token
   raise "Invalid oauth_token_secret" unless bot.oauth_token_secret
+  
+  model = nil
+
+  bot.on_startup do
+    model = Model.load("model/danielcassidy.model")
+  end
 
   bot.on_follow do |user|
     bot.follow user.screen_name
