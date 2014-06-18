@@ -1,17 +1,15 @@
 #!/usr/bin/env ruby
 
 require 'twitter_ebooks'
+require 'parseconfig'
 
-# This is an example bot definition with event handlers commented out
-# You can define as many of these as you like; they will run simultaneously
+config = ParseConfig.new('bots.conf')
 
 Ebooks::Bot.new("danielcasebooks") do |bot|
-  # Consumer details come from registering an app at https://dev.twitter.com/
-  # OAuth details can be fetched with https://github.com/marcel/twurl
-  bot.consumer_key = "" # Your app consumer key
-  bot.consumer_secret = "" # Your app consumer secret
-  bot.oauth_token = "" # Token connecting the app to this account
-  bot.oauth_token_secret = "" # Secret connecting the app to this account
+  bot.consumer_key = config["danielcasebooks"]["consumer_key"]
+  bot.consumer_secret = config["danielcasebooks"]["consumer_secret"]
+  bot.oauth_token = config["danielcasebooks"]["oauth_token"]
+  bot.oauth_token_secret = config["danielcasebooks"]["oauth_token_secret"]
 
   bot.on_message do |dm|
     # Reply to a DM
