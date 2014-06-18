@@ -10,7 +10,8 @@ unless File.exist? config_file_name then
   config_file.write <<-END.gsub(/^[ \t]*/, "")
     [danielcasebooks]
 
-    # These details come from registering an app at https://dev.twitter.com/
+    # Consumer details come from registering an app at https://dev.twitter.com/
+    # OAuth details can be fetched with https://github.com/marcel/twurl
 
     # Your app consumer key
     #consumer_key = ""
