@@ -51,11 +51,6 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
   raise "Invalid oauth_token" unless bot.oauth_token
   raise "Invalid oauth_token_secret" unless bot.oauth_token_secret
 
-  bot.on_message do |dm|
-    # Reply to a DM
-    # bot.reply(dm, "secret secrets")
-  end
-
   bot.on_follow do |user|
     # Follow a user back
     # bot.follow(user[:screen_name])
