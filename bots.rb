@@ -71,9 +71,16 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
     # bot.reply(tweet, meta[:reply_prefix] + "nice tweet")
   end
 
-  bot.scheduler.every '24h' do
-    # Tweet something every 24 hours
-    # See https://github.com/jmettraux/rufus-scheduler
-    # bot.tweet("hi")
+  bot.scheduler.every '1h' do
+    # 1/3 chance of tweeting up to three times per hour.
+    num_tweets = rand(9) - 5
+    
+    bot.delay(rand(3600)) do
+      num_tweets.times do
+        bot.delay(rand(180)) do
+          bot.tweet model.make_statement
+        end
+      end
+    end
   end
 end
