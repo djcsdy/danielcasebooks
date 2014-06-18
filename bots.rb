@@ -22,7 +22,7 @@ unless File.exist? config_file_name then
     #oauth_token = ""
 
     # Secret connecting the app to this account
-    #oauth_secret = ""
+    #oauth_token_secret = ""
   END
   config_file.close
 
