@@ -134,6 +134,13 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
     end
   end
   
+  retweet = Proc.new do |tweet|
+    bot.log "Retweeting @#{tweet[:user][:screen_name]}: #{tweet[:text]}"
+    bot.delay (4..30) do
+      bot.twitter.retweet(tweet[:id])
+    end
+  end
+  
   reply = Proc.new do |tweet, meta|
     bot.delay(15..180) do
       response_text = model.make_response(meta[:mentionless], meta[:limit])
