@@ -71,7 +71,7 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
   end
 
   bot.on_mention do |tweet, meta|
-    interestingness = compute_interestingness tweet
+    interestingness = compute_interestingness.call tweet
     
     if interestingness * rand > 1 then
       favorite(tweet)
@@ -119,7 +119,7 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
     end
   end
   
-  def compute_interestingness(tweet)
+  compute_interestingness = Proc.new do |tweet|
     tokens = Ebooks::NLP.tokenize tweet[:text]
     tokens.
         select {|token| interesting_tokens[token]}.
