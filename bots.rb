@@ -53,9 +53,14 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
   raise "Invalid oauth_token_secret" unless bot.oauth_token_secret
   
   model = nil
+  
+  top100 = nil
+  top20 = nil
 
   bot.on_startup do
     model = Ebooks::Model.load("model/danielcassidy.model")
+    top100 = model.keywords.top(100).map(&:to_s).map(&:downcase)
+    top20 = model.keywords.top(20).map(&:to_s).map(&:downcase)
   end
 
   bot.on_follow do |user|
