@@ -54,13 +54,16 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
   
   model = nil
   
-  top100 = nil
-  top20 = nil
-
+  interesting_tokens = nil
+  
   bot.on_startup do
     model = Ebooks::Model.load("model/danielcassidy.model")
-    top100 = model.keywords.top(100).map(&:to_s).map(&:downcase)
-    top20 = model.keywords.top(20).map(&:to_s).map(&:downcase)
+    
+    interesting_tokens = model.keywords.
+        top(100).
+        map {|token| {text: token.text.downcase, score: token.percent}}.
+        map {|token| {token.text => token}}.
+        reduce({}) {|h,p| h.merge p}
   end
 
   bot.on_follow do |user|
@@ -88,5 +91,12 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
         end
       end
     end
+  end
+  
+  def compute_interestingness(tweet)
+    tokens = Ebooks::NLP.tokenize tweet.text
+    tokens.
+        select {|token| interesting_tokens[token]}.
+        reduce(0) {|score, token| score + interesting_tokens[token].score}
   end
 end
