@@ -56,6 +56,36 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
   
   interesting_tokens = nil
   
+  compute_interestingness = Proc.new do |tweet|
+    tokens = Ebooks::NLP.tokenize tweet[:text]
+    tokens.
+        select {|token| interesting_tokens[token]}.
+        reduce(0) {|score, token| score + interesting_tokens[token][:score]}
+  end
+  
+  favorite = Proc.new do |tweet|
+    bot.log "Favoriting @#{tweet[:user][:screen_name]}: #{tweet[:text]}"
+    
+    bot.delay(4..30) do
+      bot.twitter.favorite tweet[:id]
+    end
+  end
+  
+  retweet = Proc.new do |tweet|
+    bot.log "Retweeting @#{tweet[:user][:screen_name]}: #{tweet[:text]}"
+    
+    bot.delay (4..30) do
+      bot.twitter.retweet(tweet[:id])
+    end
+  end
+  
+  reply = Proc.new do |tweet, meta|
+    bot.delay(15..180) do
+      response_text = model.make_response(meta[:mentionless], meta[:limit])
+      bot.reply(tweet, meta[:reply_prefix] << response_text)
+    end
+  end
+  
   bot.on_startup do
     model = Ebooks::Model.load("model/danielcassidy.model")
     
@@ -127,36 +157,6 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
           end
         end
       end
-    end
-  end
-  
-  compute_interestingness = Proc.new do |tweet|
-    tokens = Ebooks::NLP.tokenize tweet[:text]
-    tokens.
-        select {|token| interesting_tokens[token]}.
-        reduce(0) {|score, token| score + interesting_tokens[token][:score]}
-  end
-  
-  favorite = Proc.new do |tweet|
-    bot.log "Favoriting @#{tweet[:user][:screen_name]}: #{tweet[:text]}"
-    
-    bot.delay(4..30) do
-      bot.twitter.favorite tweet[:id]
-    end
-  end
-  
-  retweet = Proc.new do |tweet|
-    bot.log "Retweeting @#{tweet[:user][:screen_name]}: #{tweet[:text]}"
-    
-    bot.delay (4..30) do
-      bot.twitter.retweet(tweet[:id])
-    end
-  end
-  
-  reply = Proc.new do |tweet, meta|
-    bot.delay(15..180) do
-      response_text = model.make_response(meta[:mentionless], meta[:limit])
-      bot.reply(tweet, meta[:reply_prefix] << response_text)
     end
   end
 end
