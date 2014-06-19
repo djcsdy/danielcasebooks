@@ -77,6 +77,10 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
       favorite(tweet)
     end
     
+    if interestingness * rand > 3 then
+      retweet(tweet)
+    end
+    
     # Avoid infinite reply chains.
     next if rand < 0.05
     
