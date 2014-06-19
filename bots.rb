@@ -88,8 +88,15 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
   end
 
   bot.on_timeline do |tweet, meta|
-    # Reply to a tweet in the bot's timeline
-    # bot.reply(tweet, meta[:reply_prefix] + "nice tweet")
+    interestingness = compute_interestingness.call tweet
+    
+    if interestingness * rand > 2 then
+      favorite.call(tweet)
+    end
+    
+    if interestingness * rand > 3 then
+      retweet.call tweet
+    end
   end
 
   bot.scheduler.every '1h' do
@@ -140,6 +147,7 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
   
   retweet = Proc.new do |tweet|
     bot.log "Retweeting @#{tweet[:user][:screen_name]}: #{tweet[:text]}"
+    
     bot.delay (4..30) do
       bot.twitter.retweet(tweet[:id])
     end
