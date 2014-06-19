@@ -81,13 +81,27 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
   end
 
   bot.scheduler.every '1h' do
-    # 1/3 chance of tweeting up to three times per hour.
-    num_tweets = rand(9) - 5
+    # 25% chance of tweeting every hour
+    next if rand > 0.25
     
+    # Tweet at a random moment during the hour
     bot.delay(rand(3600)) do
-      num_tweets.times do
-        bot.delay(rand(180)) do
-          bot.tweet model.make_statement
+      text = model.make_statement
+      bot.tweet text
+      
+      # 10% chance of tweeting a follow-on thought
+      next if rand > 0.1
+      
+      bot.delay(rand(60)) do
+        text = model.make_response text
+        bot.tweet text
+        
+        # 10% chance of tweeting another follow-on thought
+        next if rand > 0.1
+        
+        bot.delay(rand(60)) do
+          text = model.make_response text
+          bot.tweet text
         end
       end
     end
