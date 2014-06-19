@@ -89,8 +89,8 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
   end
 
   bot.scheduler.every '1h' do
-    # 25% chance of tweeting every hour
-    if rand > 0.25 then
+    # 1/6 chance of tweeting every hour
+    if rand > (1.0/6.0) then
       bot.log "Decided not to tweet this hour."
     else
       bot.log "Will tweet some time this hour."
