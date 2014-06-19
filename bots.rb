@@ -125,8 +125,8 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
         select {|token| interesting_tokens[token]}.
         reduce(0) {|score, token| score + interesting_tokens[token][:score]}
   end
-
-  def favorite(tweet)
+  
+  favorite = Proc.new do |tweet|
     bot.log "Favoriting @#{tweet[:user][:screen_name]}: #{tweet[:text]}"
     
     bot.delay(4..30) do
@@ -134,7 +134,7 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
     end
   end
   
-  def reply(tweet, meta)
+  reply = Proc.new do |tweet, meta|
     bot.delay(15..180) do
       response_text = model.make_response(meta[:mentionless], meta[:limit])
       bot.reply(tweet, meta[:reply_prefix] << response_text)
