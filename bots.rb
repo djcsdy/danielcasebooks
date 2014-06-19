@@ -62,7 +62,7 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
     interesting_tokens = model.keywords.
         top(100).
         map {|token| {text: token.text.downcase, score: token.percent}}.
-        map {|token| {token.text => token}}.
+        map {|token| {token[:text] => token}}.
         reduce({}) {|h,p| h.merge p}
   end
 
@@ -111,6 +111,6 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
     tokens = Ebooks::NLP.tokenize tweet.text
     tokens.
         select {|token| interesting_tokens[token]}.
-        reduce(0) {|score, token| score + interesting_tokens[token].score}
+        reduce(0) {|score, token| score + interesting_tokens[token][:score]}
   end
 end
