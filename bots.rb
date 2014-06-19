@@ -71,8 +71,16 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
   end
 
   bot.on_mention do |tweet, meta|
-    # Reply to a mention
-    # bot.reply(tweet, meta[:reply_prefix] + "oh hullo")
+    interestingness = compute_interestingness tweet
+    
+    if interestingness * rand > 1 then
+      favorite(tweet)
+    end
+    
+    # Avoid infinite reply chains.
+    next if rand < 0.05
+    
+    reply(tweet, meta)
   end
 
   bot.on_timeline do |tweet, meta|
@@ -112,5 +120,20 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
     tokens.
         select {|token| interesting_tokens[token]}.
         reduce(0) {|score, token| score + interesting_tokens[token][:score]}
+  end
+
+  def favorite(tweet)
+    bot.log "Favoriting @#{tweet.user.screen_name}: #{tweet.text}"
+    
+    bot.delay(4..30) do
+      bot.twitter.favorite tweet.id
+    end
+  end
+  
+  def reply(tweet, meta)
+    bot.delay(15..180) do
+      response_text = model.make_response(meta[:mentionless], meta[:limit])
+      bot.reply(tweet, meta[:reply_prefix] << response_text)
+    end
   end
 end
