@@ -67,7 +67,7 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
   end
 
   bot.on_follow do |user|
-    bot.follow user.screen_name
+    bot.follow user[:screen_name]
   end
 
   bot.on_mention do |tweet, meta|
@@ -120,17 +120,17 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
   end
   
   def compute_interestingness(tweet)
-    tokens = Ebooks::NLP.tokenize tweet.text
+    tokens = Ebooks::NLP.tokenize tweet[:text]
     tokens.
         select {|token| interesting_tokens[token]}.
         reduce(0) {|score, token| score + interesting_tokens[token][:score]}
   end
 
   def favorite(tweet)
-    bot.log "Favoriting @#{tweet.user.screen_name}: #{tweet.text}"
+    bot.log "Favoriting @#{tweet[:user][:screen_name]}: #{tweet[:text]}"
     
     bot.delay(4..30) do
-      bot.twitter.favorite tweet.id
+      bot.twitter.favorite tweet[:id]
     end
   end
   
