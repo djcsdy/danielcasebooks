@@ -67,7 +67,11 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
     bot.log "Favoriting @#{tweet[:user][:screen_name]}: #{tweet[:text]}"
     
     bot.delay(4..30) do
-      bot.twitter.favorite tweet[:id]
+      begin
+        bot.twitter.favorite tweet[:id]
+      rescue
+        bot.log $!
+      end
     end
   end
   
@@ -75,7 +79,11 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
     bot.log "Retweeting @#{tweet[:user][:screen_name]}: #{tweet[:text]}"
     
     bot.delay (4..30) do
-      bot.twitter.retweet(tweet[:id])
+      begin
+        bot.twitter.retweet(tweet[:id])
+      rescue
+        bot.log $!
+      end
     end
   end
   
@@ -97,7 +105,11 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
   end
 
   bot.on_follow do |user|
-    bot.follow user[:screen_name]
+    begin
+      bot.follow user[:screen_name]
+    rescue
+      bot.log $!
+    end
   end
 
   bot.on_mention do |tweet, meta|
@@ -114,7 +126,11 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
     # Avoid infinite reply chains.
     next if rand < 0.05
     
-    reply.call(tweet, meta)
+    begin
+      reply.call(tweet, meta)
+    rescue
+      bot.log $!
+    end
   end
 
   bot.on_timeline do |tweet, meta|
@@ -139,22 +155,34 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
       # Tweet at a random moment during the hour
       bot.delay(rand(3600)) do
         text = model.make_statement
-        bot.tweet text
-        
-        # 10% chance of tweeting a follow-on thought
-        next if rand > 0.1
-        
-        bot.delay(rand(60)) do
-          text = model.make_response text
+        begin
           bot.tweet text
-          
-          # 10% chance of tweeting another follow-on thought
+        
+          # 10% chance of tweeting a follow-on thought
           next if rand > 0.1
-          
+        
           bot.delay(rand(60)) do
             text = model.make_response text
-            bot.tweet text
+            begin
+              bot.tweet text
+          
+              # 10% chance of tweeting another follow-on thought
+              next if rand > 0.1
+          
+              bot.delay(rand(60)) do
+                text = model.make_response text
+                begin
+                  bot.tweet text
+                rescue
+                  bot.log $!
+                end
+              end
+            rescue
+              bot.log $!
+            end
           end
+        rescue
+          bot.log $!
         end
       end
     end
