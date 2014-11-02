@@ -136,11 +136,11 @@ Ebooks::Bot.new("danielcasebooks") do |bot|
   bot.on_timeline do |tweet, meta|
     interestingness = compute_interestingness.call tweet
     
-    if interestingness * rand > 2 then
+    if interestingness * rand > 3 then
       favorite.call(tweet)
     end
     
-    if interestingness * rand > 3 then
+    if interestingness * rand > 4 then
       retweet.call tweet
     end
   end
